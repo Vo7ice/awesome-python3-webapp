@@ -8,4 +8,4 @@ Demo App for learning python
 - 如果传入`size`参数,就通过`fetchmany()`获取最多指定数量的记录,否则,通过`fetchall()`获取所有记录
 - `execute()`函数和`select()`函数所不同的是,`cursor`对象不返回结果集,而是通过`rowcount`返回结果数
 - [Python 3.5的async和await特性(PEP492翻译)] (https://my.oschina.net/cppblog/blog/469926)
-- [深刻理解Python中的元类(metaclass)](http://blog.jobbole.com/21351/)
+- [深刻理解Python中的元类(metaclass)] (http://blog.jobbole.com/21351/)

@@ -5,6 +5,9 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="www.orm.StandardError" />
+          <option value="orm.*" />
+          <option value="models" />
+          <option value="www.test.*" />
         </list>
       </option>
     </inspection_tool>

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import asyncio, logging
-
+import asyncio
+import logging
 import aiomysql
 
 logging.basicConfig(level=logging.INFO)
@@ -17,12 +17,12 @@ def log(sql, args=()):
 # 创建连接池
 @asyncio.coroutine
 def create_pool(loop, **kw):
-    logging.info('ceate database connection pool...')
+    logging.info('create database connection pool...')
     global __pool
     __pool = yield from aiomysql.create_pool(
-        host=kw.get('host', 'loaclhost'),
+        host=kw.get('host', 'localhost'),
         port=kw.get('port', 3306),
-        user=kw['usert'],
+        user=kw['user'],
         password=kw['password'],
         db=kw['db'],
         charset=kw.get('charset', 'utf-8'),
@@ -132,12 +132,12 @@ class ModelMetaClass(type):
                 if v.primary_key:
                     # 找到主键:
                     if primaryKey:
-                        raise StandardError('Duplicate primary key for field: %s' % k)
+                        raise BaseException('Duplicate primary key for field: %s' % k)
                     primaryKey = k
                 else:
                     fields.append(k)
         if not primaryKey:
-            raise StandardError('Primary key not found')
+            raise BaseException('Primary key not found')
         for k in mappings.keys():
             attrs.pop(k)
         escaped_fields = list(map(lambda f: '`%s`' % f, fields))
@@ -228,9 +228,7 @@ class Model(dict, metaclass=ModelMetaClass):
                 args.extend(limit)
             else:
                 raise ValueError('Invalid limit value: %s' % str(limit))
-        rs = yield from select(' '.join(sql), args, 1)
-        if len(rs) == 0:
-            return None
+        rs = yield from select(' '.join(sql), args)
         return [cls(**r) for r in rs]
 
     @classmethod
@@ -242,6 +240,7 @@ class Model(dict, metaclass=ModelMetaClass):
         rows = yield from execute('__insert__', args)
         if rows != 1:
             logging.warning('failed to insert record: affected rows:%s' % rows)
+        return rows
 
     @classmethod
     @asyncio.coroutine
