@@ -7,3 +7,5 @@ Demo App for learning python
 - 注意到`yield from`将调用一个子协程(也就是在一个协程中调用另一个协程)并直接获得子协程的返回结果.
 - 如果传入`size`参数,就通过`fetchmany()`获取最多指定数量的记录,否则,通过`fetchall()`获取所有记录
 - `execute()`函数和`select()`函数所不同的是,`cursor`对象不返回结果集,而是通过`rowcount`返回结果数
+- [Python 3.5的async和await特性(PEP492翻译)] (https://my.oschina.net/cppblog/blog/469926)
+- [深刻理解Python中的元类(metaclass)](http://blog.jobbole.com/21351/)
