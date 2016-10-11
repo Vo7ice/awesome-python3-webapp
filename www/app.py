@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import asyncio
-import logging;
+import logging
+from aiohttp import web
 
 logging.basicConfig(level=logging.INFO)
-
-from aiohttp import web
 
 __author__ = 'Vo7ice'
 
