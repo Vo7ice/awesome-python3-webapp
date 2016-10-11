@@ -9,6 +9,7 @@ Demo App for learning python
 - `execute()`函数和`select()`函数所不同的是,`cursor`对象不返回结果集,而是通过`rowcount`返回结果数
 - [Python 3.5的async和await特性(PEP492翻译)] (https://my.oschina.net/cppblog/blog/469926)
 - [深刻理解Python中的元类(metaclass)] (http://blog.jobbole.com/21351/)
+
 ### Day4
 - `test`中在`create_pool`时需要对属性进行比对.比对成功才能打开
 - ```AttributeError: 'Connection' object has no attribute '_writer'```常见错误
