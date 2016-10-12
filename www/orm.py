@@ -25,12 +25,22 @@ def create_pool(loop, **kw):
         user=kw['user'],
         password=kw['password'],
         db=kw['db'],
-        charset=kw.get('charset', 'utf-8'),
+        charset=kw.get('charset', 'utf8'),
         autocommit=kw.get('autocommit', True),
         maxsize=kw.get('maxsize', 10),
         minsize=kw.get('minsize', 1),
         loop=loop
     )
+
+
+# 销毁连接池
+@asyncio.coroutine
+def destroy_pool():
+    logging.info('destroy database connection pool...')
+    global __pool
+    if __pool is not None:
+        __pool.close()
+        yield from __pool.wait_closed()
 
 
 # 搜索语句
@@ -40,7 +50,7 @@ def select(sql, args, size=None):
     global __pool
     with (yield from __pool) as conn:
         cur = yield from conn.cursor(aiomysql.DictCursor)
-        yield from cur.excute(sql.replace('?', '%s'), args or ())
+        yield from cur.execute(sql.replace('?', '%s'), args or ())
         if size:
             rs = yield from cur.fetchmany(size)
         else:
@@ -120,7 +130,7 @@ class ModelMetaClass(type):
     def __new__(cls, name, bases, attrs):
         if name == 'Model':
             return type.__new__(cls, name, bases, attrs)
-        tableName = attrs.get('__tabel__', None) or name
+        tableName = attrs.get('__table__', None) or name
         logging.info('found model %s (table: %s)' % (name, tableName))
         mappings = dict()
         fields = []
@@ -141,10 +151,11 @@ class ModelMetaClass(type):
         for k in mappings.keys():
             attrs.pop(k)
         escaped_fields = list(map(lambda f: '`%s`' % f, fields))
-        attrs['mappings'] = mappings  # 保存属性和列的映射关系
+        attrs['__mappings__'] = mappings  # 保存属性和列的映射关系
         attrs['__table__'] = tableName
         attrs['__primary_key__'] = primaryKey  # 主键属性名
         attrs['__fields__'] = fields  # 除主键外的属性名
+        # ------sql语句--------
         attrs['__select__'] = 'select `%s`,%s from `%s`' % (primaryKey, ', '.join(escaped_fields), tableName)
         attrs['__insert__'] = 'insert into `%s` (%s,`%s`) values(%s)' % (
             tableName, ', '.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
@@ -181,6 +192,7 @@ class Model(dict, metaclass=ModelMetaClass):
 
         return value
 
+    # 根据查询条件查一个实例
     @classmethod
     @asyncio.coroutine
     def find(cls, pk):
@@ -190,6 +202,7 @@ class Model(dict, metaclass=ModelMetaClass):
             return None
         return cls(**rs[0])
 
+    # 根据列名和条件查看数据库有多少条信息
     @classmethod
     @asyncio.coroutine
     def findNumber(cls, selectField, where=None, args=None):
@@ -203,20 +216,24 @@ class Model(dict, metaclass=ModelMetaClass):
             return None
         return rs[0]['_num_']
 
+    # 根据条件查询所有结果集
     @classmethod
     @asyncio.coroutine
     def findAll(cls, where=None, args=None, **kwargs):
         """find all objects by where clause"""
         sql = [cls.__select__]
+        # where 查询条件
         if where:
             sql.append('where')
             sql.append(where)
         if args is None:
             args = []
+        # orderBy 排序关键字
         orderBy = kwargs.get('orderBy', None)
         if orderBy:
-            sql.append('orderBy')
+            sql.append('order by')
             sql.append(orderBy)
+        # limit 筛选关键字
         limit = kwargs.get('limit', None)
         if limit is not None:
             sql.append('limit')
@@ -231,32 +248,40 @@ class Model(dict, metaclass=ModelMetaClass):
         rs = yield from select(' '.join(sql), args)
         return [cls(**r) for r in rs]
 
+    # 保存一条数据
     @classmethod
     @asyncio.coroutine
     def save(cls):
         """save object"""
+        args = []
+        for x in cls.__fields__:
+            logging.info('field:%s' % x)
+            # res = cls.getValueOrDefault(cls,key=x)
+            # args.append(res)
         args = list(map(cls.getValueOrDefault, cls.__fields__))
-        args.append(cls.getValueOrDefault(cls.primaryKey))
+        args.append(cls.getValueOrDefault(cls.__primary_key__))
         rows = yield from execute('__insert__', args)
         if rows != 1:
             logging.warning('failed to insert record: affected rows:%s' % rows)
         return rows
 
+    # 修改一条数据
     @classmethod
     @asyncio.coroutine
     def updateItem(cls):
         """update object"""
-        args = list(map(cls.getValue, cls.fields))
-        args.append(cls.getValue(cls.primaryKey))
+        args = list(map(cls.getValue, cls.__fields__))
+        args.append(cls.getValue(cls.__primary_key__))
         rows = yield from execute('__update__', args)
         if rows != 1:
             logging.warning('failed to update record by primary key: affected rows:%s' % rows)
 
+    # 去除一条数据
     @classmethod
     @asyncio.coroutine
     def remove(cls):
         """remove object by primary key"""
-        args = [cls.getValue(cls.primaryKey)]
+        args = [cls.getValue(key=cls.__primary_key__)]
         rows = yield from execute('__delete__', args)
         if rows != 1:
             logging.warning('failed to remove record by primary key: affected rows:%s' % rows)

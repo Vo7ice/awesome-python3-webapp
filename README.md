@@ -14,3 +14,4 @@ Demo App for learning python
 - `test`中在`create_pool`时需要对属性进行比对.比对成功才能打开
 - ```AttributeError: 'Connection' object has no attribute '_writer'```常见错误
 - `pycham`不能导入本地包,需要将文件夹设为`sources root`,右键->`make dictionary as`
+- `map函数`为什么会不起作用?
