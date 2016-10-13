@@ -14,4 +14,12 @@ Demo App for learning python
 - `test`中在`create_pool`时需要对属性进行比对.比对成功才能打开
 - ```AttributeError: 'Connection' object has no attribute '_writer'```常见错误
 - `pycham`不能导入本地包,需要将文件夹设为`sources root`,右键->`make dictionary as`
-- `map函数`为什么会不起作用?
+- ~~`map函数`为什么会不起作用?~~(调通,去除`@classmethod` `save`,`update`,`remove`为对象调用函数,不是类函数)
+
+### Day5
+- `web`框架,装饰器装饰`get`和`post`函数,能让用户更快的使用
+- `RequestHandler`是一个类,由于定义了`__call__()`方法，因此可以将其实例视为函数.
+- [`join()函数`](./func.md) 用于将序列中的元素以指定的字符连接生成一个新的字符串.
+- [`rfind()函数`](./func.md) 返回字符串最后一次出现的位置,如果没有匹配项则返回-1.
+
+    

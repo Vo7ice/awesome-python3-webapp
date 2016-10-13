@@ -25,32 +25,32 @@ def next_id():
 
 
 def test_save(in_loop):
-    # yield from orm.create_pool(loop=in_loop, host='127.0.0.1', user='Vo7ice', password='passwd',
-    #                            db='awesome')
-    # u = User(name='Test', email='test@example.com', passwd='123456', image='about:blank')
-    # res = yield from u.save()
-    # yield from orm.destroy_pool()
-    # return res
-    pool = yield from aiomysql.create_pool(host='127.0.0.1',
-                                           port=3306,
-                                           user='Vo7ice',
-                                           password='passwd',
-                                           db='awesome',
-                                           charset='utf8',
-                                           autocommit=True,
-                                           maxsize=10,
-                                           minsize=1,
-                                           loop=in_loop)
-    with (yield from pool) as conn:
-        cur = yield from conn.cursor()
-        u = User(name='Test', email='test@example.com', passwd='123456', image='about:blank')
-        args = list(map(u.getValueOrDefault, u.__fields__))
-        args.append(u.getValueOrDefault(u.__primary_key__))
-        yield from cur.execute(u.__insert__.replace('?', '%s'), args)
-        yield from cur.close()
-        yield from conn.commit()
-    pool.close()
-    yield from pool.wait_closed()
+    yield from orm.create_pool(loop=in_loop, host='127.0.0.1', user='Vo7ice', password='passwd',
+                               db='awesome')
+    u = User(name='Test', email='test@example.com', passwd='123456', image='about:blank')
+    res = yield from u.save()
+    yield from orm.destroy_pool()
+    return res
+    # pool = yield from aiomysql.create_pool(host='127.0.0.1',
+    #                                        port=3306,
+    #                                        user='Vo7ice',
+    #                                        password='passwd',
+    #                                        db='awesome',
+    #                                        charset='utf8',
+    #                                        autocommit=True,
+    #                                        maxsize=10,
+    #                                        minsize=1,
+    #                                        loop=in_loop)
+    # with (yield from pool) as conn:
+    #     cur = yield from conn.cursor()
+    #     u = User(name='Test', email='test@example.com', passwd='123456', image='about:blank')
+    #     args = list(map(u.getValueOrDefault, u.__fields__))
+    #     args.append(u.getValueOrDefault(u.__primary_key__))
+    #     yield from cur.execute(u.__insert__.replace('?', '%s'), args)
+    #     yield from cur.close()
+    #     yield from conn.commit()
+    # pool.close()
+    # yield from pool.wait_closed()
 
 
 def test_find(in_loop):

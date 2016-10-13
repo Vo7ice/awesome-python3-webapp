@@ -162,7 +162,7 @@ class ModelMetaClass(type):
             tableName, ', '.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
         attrs['__update__'] = 'update `%s` set %s where `%s` = ?' % (
             tableName, '. '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
-        attrs['__delete__'] = 'delete from `%s` where `%s`=?' % (tableName, primaryKey)
+        attrs['__remove__'] = 'delete from `%s` where `%s`=?' % (tableName, primaryKey)
         return type.__new__(cls, name, bases, attrs)
 
 
@@ -253,39 +253,32 @@ class Model(dict, metaclass=ModelMetaClass):
         return [cls(**r) for r in rs]
 
     # 保存一条数据
-    @classmethod
     @asyncio.coroutine
-    def save(cls):
+    def save(self):
         """save object"""
-        args = []
-        for x in cls.__fields__:
-            logging.info('field:%s' % x)
-            # res = cls.getValueOrDefault(cls,key=x)
-            # args.append(res)
-        args = list(map(cls.getValueOrDefault, cls.__fields__))
-        args.append(cls.getValueOrDefault(cls.__primary_key__))
-        rows = yield from execute('__insert__', args)
+        args = list(map(self.getValueOrDefault, self.__fields__))
+        args.append(self.getValueOrDefault(self.__primary_key__))
+        logging.info('args:%s' % args)
+        rows = yield from execute(self.__insert__, args)
         if rows != 1:
             logging.warning('failed to insert record: affected rows:%s' % rows)
         return rows
 
     # 修改一条数据
-    @classmethod
     @asyncio.coroutine
-    def updateItem(cls):
+    def updateItem(self):
         """update object"""
-        args = list(map(cls.getValue, cls.__fields__))
-        args.append(cls.getValue(cls.__primary_key__))
-        rows = yield from execute('__update__', args)
+        args = list(map(self.getValue, self.__fields__))
+        args.append(self.getValue(self.__primary_key__))
+        rows = yield from execute(self.__update__, args)
         if rows != 1:
             logging.warning('failed to update record by primary key: affected rows:%s' % rows)
 
     # 去除一条数据
-    @classmethod
     @asyncio.coroutine
-    def remove(cls):
+    def remove(self):
         """remove object by primary key"""
-        args = [cls.getValue(key=cls.__primary_key__)]
-        rows = yield from execute('__delete__', args)
+        args = [self.getValue(key=self.__primary_key__)]
+        rows = yield from execute(self.__remove__, args)
         if rows != 1:
             logging.warning('failed to remove record by primary key: affected rows:%s' % rows)
