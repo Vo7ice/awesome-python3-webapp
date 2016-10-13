@@ -25,8 +25,7 @@ def next_id():
 
 
 def test_save(in_loop):
-    yield from orm.create_pool(loop=in_loop, host='127.0.0.1', user='Vo7ice', password='passwd',
-                               db='awesome')
+    yield from orm.create_pool(loop=in_loop, host='127.0.0.1', user='Vo7ice', password='passwd', db='awesome')
     u = User(name='Test', email='test@example.com', passwd='123456', image='about:blank')
     res = yield from u.save()
     yield from orm.destroy_pool()
