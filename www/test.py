@@ -76,7 +76,7 @@ def test_update(in_loop, user):
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(test_find(loop))
+    loop.run_until_complete(test_save(loop))
     loop.close()
     # conn = pymysql.connect(host='127.0.0.1', port=3306,
     #                        user='root', password='',
