@@ -15,7 +15,7 @@ __author__ = 'Vo7ice'
 
 @get('/')
 @asyncio.coroutine
-def index(**request): # 需要变长参数或关键字参数
+def index(request): # 需要变长参数或关键字参数 找到原因了
     users = yield from User.findAll()
     logging.info('users len %d' % len(users))
     return {

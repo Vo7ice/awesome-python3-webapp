@@ -24,6 +24,7 @@ Demo App for learning python
 
 ### Day6
 - `app[__templating__]`可以获得模版
-- `index(*request)/index(**request)`需要变长参数或者关键字参数
+- ~~`index(*request)/index(**request)`需要变长参数或者关键字参数~~
+- `coreweb.py`中有对参数进行对比和获取的,之前`request`参数没有进行返回,永远不能为`True` 已修改
 
     

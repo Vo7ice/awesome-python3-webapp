@@ -44,7 +44,7 @@ def get(path):
 # post方法
 def post(path):
     """
-    define decorator @get('/path')
+    define decorator @post('/path')
     """
 
     def decorator(func):
@@ -109,6 +109,7 @@ def has_request_args(fn):
                       and param.kind != inspect.Parameter.VAR_KEYWORD):
             raise ValueError(
                 'request parameter must be the last named parameter in function: %s %s' % (fn.__name__, str(sig)))
+    return found
 
 
 # `RequestHandler`是一个类,由于定义了`__call__()`方法，因此可以将其实例视为函数.
