@@ -22,4 +22,8 @@ Demo App for learning python
 - [`join()函数`](./func.md) 用于将序列中的元素以指定的字符连接生成一个新的字符串.
 - [`rfind()函数`](./func.md) 返回字符串最后一次出现的位置,如果没有匹配项则返回-1.
 
+### Day6
+- `app[__templating__]`可以获得模版
+- `index(*request)/index(**request)`需要变长参数或者关键字参数
+
     

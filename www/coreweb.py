@@ -129,6 +129,8 @@ class RequestHandler(object):
         kw = None  # 获取参数
         # r = yield from self._func(**kw)
         # 先检查再获取参数
+        # logging.info(
+        #    'var %s ,named %s ,required %s.' % (self._has_var_kw_arg, self._has_named_kw_args, self._required_kw_args))
         if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:
             if request.method == 'POST':
                 if not request.content_type:
