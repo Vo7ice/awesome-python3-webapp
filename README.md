@@ -27,4 +27,7 @@ Demo App for learning python
 - ~~`index(*request)/index(**request)`需要变长参数或者关键字参数~~
 - `coreweb.py`中有对参数进行对比和获取的,之前`request`参数没有进行返回,永远不能为`True` 已修改
 
-    
+### Day7
+- `favicon.ico`是浏览器的标签头上面显示了一个图标
+- 前端的`MVC`模式通常可以通过框架实现,这里用的是可以响应式编程的`uikit`
+- 定义了`__base__.html`模版框架,让具体页面填充相对应的`block`来完成页面内容
