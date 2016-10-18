@@ -105,7 +105,7 @@ def response_factory(app, handler):
             resp = web.Response(body=r.encode('utf-8'))
             resp.content_type = 'text/html;charset=utf-8'
             return resp
-        # 结果是列表的json
+        # 结果是字典的json
         if isinstance(r, dict):
             template = r.get('__template__')
             logging.info('template %s' % template)
