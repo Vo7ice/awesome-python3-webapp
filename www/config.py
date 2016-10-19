@@ -32,9 +32,9 @@ class Dict(dict):
 
 
 # 用override的配置覆盖默认配置
-def merge(defauts, override):
+def merge(defaults, override):
     r = {}
-    for k, v in defauts.items():  # 获取默认设置
+    for k, v in defaults.items():  # 获取默认设置
         if k in override:  # 如果override有先关配置项,就进行修改
             if isinstance(v, dict):  # 如果还有子配置就递归
                 r[k] = merge(v, override[k])
@@ -47,7 +47,7 @@ def merge(defauts, override):
 
 # 将dict转化为可以x.y形式的Dict
 def toDict(d):
-    D = dict()
+    D = Dict()  # 这里为转换后的类名
     for k, v in d.items():
         D[k] = toDict(v) if isinstance(v, dict) else v
     return D

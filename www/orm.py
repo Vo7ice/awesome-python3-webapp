@@ -201,7 +201,7 @@ class Model(dict, metaclass=ModelMetaClass):
     @asyncio.coroutine
     def find(cls, pk):
         """find object by primary key"""
-        rs = yield from select('%s where `%s = ?`' % (cls.__select__, cls.__primaryKey__), [pk], 1)
+        rs = yield from select('%s where `%s` = ?' % (cls.__select__, cls.__primary_key__), [pk], 1)
         if len(rs) == 0:
             return None
         return cls(**rs[0])
@@ -215,7 +215,7 @@ class Model(dict, metaclass=ModelMetaClass):
         if where:
             sql.append('where')
             sql.append(where)
-        rs = yield from select('. '.join(sql), args, 1)
+        rs = yield from select(' '.join(sql), args, 1)# 没有.
         if len(rs) == 0:
             return None
         return rs[0]['_num_']

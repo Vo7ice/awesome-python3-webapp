@@ -31,3 +31,7 @@ Demo App for learning python
 - `favicon.ico`是浏览器的标签头上面显示了一个图标
 - 前端的`MVC`模式通常可以通过框架实现,这里用的是可以响应式编程的`uikit`
 - 定义了`__base__.html`模版框架,让具体页面填充相对应的`block`来完成页面内容
+
+### Day8
+- `register.html`中通过`$('#vm').show();`来显示表单
+- [Web编程之Cookie详解] (http://victor-jan.iteye.com/blog/964688)

@@ -61,3 +61,38 @@
 
 - `python` `callable(object)`检查对象`object`是否可调用.如果返回`True`,`object`仍然可能调用失败;但如果返回`False`,调用对象`object`绝对不会成功.
     `Caution` 类是可调用的,而类的实例实现了`__call__()`方法才可调用.
+    
+- `python` 正确拼写是`startswith`,不能写成`startwith`
+
+- `python` 将`dict`转换成可以用x.y形式的类`Dict`时候
+    ``` python
+    # 将dict转化为可以x.y形式的Dict
+    def toDict(d):
+        D = Dict()#这里为转换后的类名
+        for k, v in d.items():
+            D[k] = toDict(v) if isinstance(v, dict) else v
+        return D
+    ```
+
+- `python` `set_cookie`
+    ``` python
+    def set_cookie(self, name, value, *, expires=None,
+                   domain=None, max_age=None, path='/',
+                   secure=None, httponly=None, version=None):
+    参数	描述
+    name	必需 规定 cookie 的名称
+    value	必需 规定 cookie 的值
+    expire	可选 规定 cookie 的有效期
+    path	可选 规定 cookie 的服务器路径 如果path设置为"/",那就是在整个domain都有效
+    domain	可选 规定 cookie 的域名
+    secure	可选 规定是否通过安全的 HTTPS 连接来传输 cookie 值为0或1
+    max_age	可选 cookie需要延续的时间(以秒为单位)
+    ```
+    
+- `JavaScript` `preventDefault()`
+    1. 定义和用法
+        方法阻止元素发生默认的行为（例如，当点击提交按钮时阻止对表单的提交）。
+    2. 语法
+        `event.preventDefault()`
+    3. 参数	描述
+        `event` 	必需,规定阻止哪个事件的默认动作,这个`event`参数来自事件绑定函数.
