@@ -35,3 +35,6 @@ Demo App for learning python
 ### Day8
 - `register.html`中通过`$('#vm').show();`来显示表单
 - [Web编程之Cookie详解] (http://victor-jan.iteye.com/blog/964688)
+
+### Day9
+- [JS中的！=、== 、！==、===的用法和区别] (http://www.cnblogs.com/liluping860122/p/3539291.html)

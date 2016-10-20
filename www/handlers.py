@@ -122,14 +122,14 @@ def api_register_user(*, email, name, passwd):
     if not name or not name.strip():  # 校验名字
         raise APIValueError('name')
     if not email or not _RE_EMAIL.match(email):  # 校验email
-        raise APIValueError('email')
+        raise APIValueError('email', 'Invalid email')
     if not passwd or not _RE_SHA1.match(passwd):  # 校验password
         raise APIValueError('passwd')
     users = yield from User.findAll('email=?', [email])
     if len(users) > 0:
         raise APIError('register:failed', 'email', 'Email is already use.')
     uid = next_id()
-    sha1_passwd = '%s %s' % (uid, passwd)
+    sha1_passwd = '%s:%s' % (uid, passwd)
     user = User(id=uid,
                 name=name.strip(),
                 email=email,
@@ -138,6 +138,34 @@ def api_register_user(*, email, name, passwd):
                 # sha1加密
                 image='http://www.grvatar.com/avatar/%s?d=mm&s=120' % hashlib.sha1(email.encode('utf-8')).hexdigest())
     yield from user.save()
+    r = web.Response()
+    r.set_cookie(COOKIE_NAME, user2cookie(user, 86400), max_age=86400, httponly=True)
+    user.passwd = '******'
+    r.content_type = 'application/json'
+    r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
+    return r
+
+
+# 验证登录
+@post('/api/authenticate')
+@asyncio.coroutine
+def authenticate(*, email, passwd):
+    if not email:
+        raise APIValueError('email', 'Invalid email')
+    if not passwd:
+        raise APIValueError('password', 'Invalid password')
+    users = yield from User.findAll('email=?', [email])
+    if len(users) == 0:
+        raise APIValueError('email', 'email not exsit')
+    user = users[0]
+    sha1 = hashlib.sha1()
+    sha1.update(user.id.encode('utf-8'))
+    sha1.update(b':')
+    sha1.update(passwd.encode('utf-8'))
+    if user.passwd != sha1.hexdigest():
+        logging.info('not eaqual user.passwd:%s , sha1.hexdigest:%s' % (user.passwd,sha1.hexdigest()))
+        raise APIValueError('passwd', 'Invalid password')
+    # 验证通过 设置cookie
     r = web.Response()
     r.set_cookie(COOKIE_NAME, user2cookie(user, 86400), max_age=86400, httponly=True)
     user.passwd = '******'
