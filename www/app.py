@@ -79,7 +79,7 @@ def auth_factory(app, handler):
             if user:
                 logging.info('set current user: %s' % user.email)
                 request.__user__ = user
-            return (yield from handler(request))
+        return (yield from handler(request))  # 没有cookie需要返回
 
     return auth
 
@@ -173,7 +173,7 @@ def datetime_filter(t):
 def init(loop):
     yield from orm.create_pool(loop=loop, host='127.0.0.1', user='Vo7ice', password='passwd', db='awesome')
     app = web.Application(loop=loop, middlewares=[
-        logger_factory, data_factory, auth_factory, response_factory
+        logger_factory, auth_factory, data_factory, response_factory
     ])
     init_jinja2(app, filters=dict(datetime=datetime_filter))
     add_routes(app, 'handlers')
