@@ -12,7 +12,7 @@ import re
 from aiohttp import web
 
 from config import configs
-from errors import APIValueError, APIError
+from errors import APIValueError, APIError, APIPermissionError
 from models import User, Blog, next_id
 from coreweb import get, post
 
@@ -43,7 +43,57 @@ def index(request):  # 需要变长参数或关键字参数 找到原因了
     ]
     return {
         '__template__': 'blogs.html',
-        'blogs': blogs
+        'blogs': blogs,
+        '__user__': request.__user__
+    }
+
+
+# 检查权限
+# 是否登录或是管理员
+def check_admin(request):
+    if request.__user__ is None or not request.__user__.admin:
+        logging.info('U R not allow to create blogs!')
+        raise APIPermissionError()
+
+
+# 新建blog
+@get('/api/blogs')
+@asyncio.coroutine
+def api_create_blog(request, *, name, summary, content):
+    check_admin(request)
+    if not name or not name.strip():
+        raise APIValueError('name', 'name can`t be empty.')
+    if not summary or not summary.strip():
+        raise APIValueError('summary', 'summary can`t be empty.')
+    if not content or not content.strip():
+        raise APIValueError('content', 'content can`t be empty.')
+    logging.info('args is okay!')
+
+    blog = Blog(user_id=request.__user__.id,
+                user_name=request.__user__.name,
+                user_image=request.__user__.image,
+                name=name.strip(),
+                summary=summary.strip(),
+                content=content.strip())
+    yield from blog.save()
+    return blog
+
+
+@get('/api/blogs/{id}')
+@asyncio.coroutine
+def api_get_blog(*, id):
+    blog = yield from Blog.find(id)
+    return blog
+
+
+# 新增blog
+@get('/manage/blogs/create')
+def manage_create_blog(request):
+    return {
+        '__template__': 'manage_blog_edit.html',
+        'id': '',
+        'action': '/api/blogs',
+        '__user__': request.__user__
     }
 
 
@@ -115,6 +165,15 @@ def register():
     }
 
 
+@get('/signout')
+def signout(request):
+    referer = request.headers.get('Referer')
+    r = web.HTTPFound(referer or '/')
+    r.set_cookie(COOKIE_NAME, '-delete-', max_age=0, httponly=True)
+    logging.info('user sign out')
+    return r
+
+
 # 注册用户
 @post('/api/user')
 @asyncio.coroutine
@@ -163,7 +222,7 @@ def authenticate(*, email, passwd):
     sha1.update(b':')
     sha1.update(passwd.encode('utf-8'))
     if user.passwd != sha1.hexdigest():
-        logging.info('not eaqual user.passwd:%s , sha1.hexdigest:%s' % (user.passwd,sha1.hexdigest()))
+        logging.info('not eaqual user.passwd:%s , sha1.hexdigest:%s' % (user.passwd, sha1.hexdigest()))
         raise APIValueError('passwd', 'Invalid password')
     # 验证通过 设置cookie
     r = web.Response()

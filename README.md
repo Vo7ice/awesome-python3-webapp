@@ -38,3 +38,4 @@ Demo App for learning python
 
 ### Day9
 - [JS中的！=、== 、！==、===的用法和区别] (http://www.cnblogs.com/liluping860122/p/3539291.html)
+- 前端中的`MVVM`模型
