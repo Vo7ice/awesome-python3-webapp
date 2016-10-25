@@ -16,8 +16,8 @@ function initVM(blog) {
         methods : {
             submit : function(event) {
                 event.preventDefault();
-                var $form = $('#vm').find('form');
-                $form.postJSON(action,this.$data,function(err,r) {
+                var $form = $('#vm').find('form');<!-- 表格中获取数据-->
+                $form.postJSON(action,this.$data,function(err,r) {<!-- 将数据传递给'/api/blogs/'-->
                     if (err) {
                         $form.showFormError(err);<!-- 如果出错 就显示错误-->
                     }
@@ -32,6 +32,7 @@ function initVM(blog) {
 }
 
 $(function () {
+    <!-- 编辑blog-->
     if (ID) {
         getJSON('/api/blogs' + ID, function(err,blog) {
             if (err) {
@@ -43,6 +44,7 @@ $(function () {
     }
     else {
         $('#loading').hide();
+        <!-- 新建blog-->
         initVM({
            name : '',
            summary : '',
@@ -50,6 +52,7 @@ $(function () {
         });
     }
 });
+
 </script>
 
 {% endblock %}
@@ -67,8 +70,8 @@ $(function () {
 </div>
 
 <div id="error" class="uk-width-1-1">
-
 </div>
+
 <div id="loading" class="uk-width-1-1 uk-text-center">
     <span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i>正在加载...</span>
 </div>
@@ -86,16 +89,16 @@ $(function () {
         <div class="uk-form-row">
             <label class="uk-form-label">摘要:</label>
             <div class="uk-form-controls">
-                <textarea v-model="summary" name="summary" rows="4" placeholder="摘要" class="uk-width-1-1"
-                          style="resize:none;"></textarea>
+                    <textarea v-model="summary" name="summary" rows="4" placeholder="摘要" class="uk-width-1-1"
+                              style="resize:none;"></textarea>
             </div>
         </div>
 
         <div class="uk-form-row">
             <label class="uk-form-label">内容:</label>
             <div class="uk-form-controls">
-                <textarea v-model="content" name="content" rows="16" placeholder="内容" class="uk-width-1-1"
-                          style="resize:none;"></textarea>
+                    <textarea v-model="content" name="content" rows="16" placeholder="内容" class="uk-width-1-1"
+                              style="resize:none;"></textarea>
             </div>
         </div>
 

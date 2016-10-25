@@ -56,8 +56,21 @@ def check_admin(request):
         raise APIPermissionError()
 
 
+# 获取page的页数
+def get_page_index(page):
+    p = 0
+
+    try:
+        p = int(page)
+    except ValueError as e:
+        pass
+    if p < 0:
+        p = 0
+    return p
+
+
 # 新建blog
-@get('/api/blogs')
+@post('/api/blogs')
 @asyncio.coroutine
 def api_create_blog(request, *, name, summary, content):
     check_admin(request)
@@ -82,8 +95,15 @@ def api_create_blog(request, *, name, summary, content):
 @get('/api/blogs/{id}')
 @asyncio.coroutine
 def api_get_blog(*, id):
+    logging.info('args is okay!')
     blog = yield from Blog.find(id)
     return blog
+
+
+@get('/api/blogs')
+@asyncio.coroutine
+def api_blogs(*, page='0'):
+    pass
 
 
 # 新增blog
@@ -93,6 +113,33 @@ def manage_create_blog(request):
         '__template__': 'manage_blog_edit.html',
         'id': '',
         'action': '/api/blogs',
+        '__user__': request.__user__
+    }
+
+
+@get('/manage/blogs')
+def manage_blogs(*, page='0', request):
+    return {
+        '__template__': 'manage_blogs.html',
+        'page_index': get_page_index(page),
+        '__user__': request.__user__
+    }
+
+
+@get('/manage/users')
+def manage_users(*, page='0', request):
+    return {
+        '__template__': 'manage_users.html',
+        'page_index': get_page_index(page),
+        '__user__': request.__user__
+    }
+
+
+@get('/manage/comments')
+def manage_comments(*, page='0', request):
+    return {
+        '__template__': 'manage_comments.html',
+        'page_index': get_page_index(page),
         '__user__': request.__user__
     }
 
