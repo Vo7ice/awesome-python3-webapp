@@ -12,7 +12,7 @@
     > methods：View可以触发的JavaScript函数，submit就是提交表单时触发的函数。
     > 我们在<form>标签中，用几个简单的v-model，就可以让Vue把Model和View关联起来：
     
-        ``` JavaScript
+        ```
         <!-- input的value和Model的name关联起来了 -->
         <input v-model="name" class="uk-width-1-1">
         ```
