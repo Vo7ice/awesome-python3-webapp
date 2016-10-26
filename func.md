@@ -110,4 +110,5 @@
     2. 语法
     
         `window.confirm (message, ok, cancel)`
-    [Javascript之confirm的用法] (http://www.cnblogs.com/netserver/p/4573512.html)
+        
+        [Javascript之confirm的用法] (http://www.cnblogs.com/netserver/p/4573512.html)
