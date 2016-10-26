@@ -19,26 +19,28 @@
 
     > Form表单通过`<form v-on="submit: submit">`把提交表单的事件关联到submit方法.
 - [Python 中 str 和 repr 的区别] (http://www.oschina.net/translate/difference-between-str-and-repr-in-python)
-    >>> class Sic(object): pass
-    ... 
-    >>> print str(Sic())
-    <__main__.Sic object at 0x8b7d0>
-    >>> print repr(Sic())
-    <__main__.Sic object at 0x8b7d0>
-    >>>
-    >>> class Sic(object): 
-    ... def __repr__(object): return 'foo'
-    ... 
-    >>> print str(Sic())
-    foo
-    >>> print repr(Sic())
-    foo
-    >>> class Sic(object):
-    ... def __str__(object): return 'foo'
-    ... 
-    >>> print str(Sic())
-    foo
-    >>> print repr(Sic())
-    <__main__.Sic object at 0x2617f0>
-    >>>
+    ``` python
+     class Sic(object): pass
+     ... 
+     print str(Sic())
+     <__main__.Sic object at 0x8b7d0>
+     print repr(Sic())
+     <__main__.Sic object at 0x8b7d0>
+    
+     class Sic(object): 
+     ... def __repr__(object): return 'foo'
+     ... 
+     print str(Sic())
+     foo
+     print repr(Sic())
+     foo
+     class Sic(object):
+     ... def __str__(object): return 'foo'
+     ... 
+     print str(Sic())
+     foo
+     print repr(Sic())
+     <__main__.Sic object at 0x2617f0>
+     ```
+    
 - [Javascript之confirm的用法] (http://www.cnblogs.com/netserver/p/4573512.html)
