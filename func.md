@@ -99,3 +99,15 @@
     3. 参数	描述
     
         `event` 	必需,规定阻止哪个事件的默认动作,这个`event`参数来自事件绑定函数.
+
+- `JavaScript` `confirm`
+    1. 定义和用法
+        confirm函数用于提供确认功能
+        
+        - 首先显示给定的message参数所包含的信息,并提供两个可选择的回答"OK"和"CANCEL"
+        - 然后等待用户选择其中的一个
+        - 如果用户选择"OK"则返回true;否则,如若选择"CANCEL"则返回false
+    2. 语法
+    
+        `window.confirm (message, ok, cancel)`
+    [Javascript之confirm的用法] (http://www.cnblogs.com/netserver/p/4573512.html)

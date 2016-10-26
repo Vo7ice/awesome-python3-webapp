@@ -15,6 +15,7 @@ from config import configs
 from errors import APIValueError, APIError, APIPermissionError
 from models import User, Blog, next_id
 from coreweb import get, post
+from page import Page
 
 logging.basicConfig(level=logging.INFO)
 
@@ -58,14 +59,14 @@ def check_admin(request):
 
 # 获取page的页数
 def get_page_index(page):
-    p = 0
+    p = 1
 
     try:
         p = int(page)
     except ValueError as e:
         pass
-    if p < 0:
-        p = 0
+    if p < 1:
+        p = 1
     return p
 
 
@@ -102,8 +103,14 @@ def api_get_blog(*, id):
 
 @get('/api/blogs')
 @asyncio.coroutine
-def api_blogs(*, page='0'):
-    pass
+def api_blogs(*, page='1'):
+    page_index = get_page_index(page)
+    num = yield from Blog.findNumber('count(id)')
+    p = Page(num, page_index)
+    if num == 0:
+        return dict(page=p, blogs=())
+    blogs = yield from Blog.findAll(orderBy='created_at desc', limit=(p.offset, p.limit))
+    return dict(page=p, blogs=blogs)
 
 
 # 新增blog
@@ -118,7 +125,7 @@ def manage_create_blog(request):
 
 
 @get('/manage/blogs')
-def manage_blogs(*, page='0', request):
+def manage_blogs(*, page='1', request):
     return {
         '__template__': 'manage_blogs.html',
         'page_index': get_page_index(page),
@@ -127,7 +134,7 @@ def manage_blogs(*, page='0', request):
 
 
 @get('/manage/users')
-def manage_users(*, page='0', request):
+def manage_users(*, page='1', request):
     return {
         '__template__': 'manage_users.html',
         'page_index': get_page_index(page),
@@ -136,7 +143,7 @@ def manage_users(*, page='0', request):
 
 
 @get('/manage/comments')
-def manage_comments(*, page='0', request):
+def manage_comments(*, page='1', request):
     return {
         '__template__': 'manage_comments.html',
         'page_index': get_page_index(page),

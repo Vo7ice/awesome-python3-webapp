@@ -1,0 +1,71 @@
+{% extends '__base__.html' %}
+
+{% block title %}用户{% endblock %}
+
+{% block beforehead %}
+<script>
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+<div class="uk-width-1-1 uk-margin-bottom">
+    <div class="uk-panel uk-panel-box">
+        <ul class="uk-breadcrumb">
+            <li><a href="/manage/comments">评论</a></li>
+            <li><a href="/manage/blogs">日志</a></li>
+            <li class="uk-active"><span>用户</span></li>
+        </ul>
+    </div>
+</div>
+
+<div id="error" class="uk-width-1-1">
+
+</div>
+
+<div id="loading" class="uk-width-1-1 uk-text-center">
+    <span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i>正在加载...</span>
+</div>
+
+<div id="vm" class="uk-width-1-1">
+    <a href="/register" class="uk-button uk-button-primary"><i class="uk-icon-plus"></i>注册用户</a>
+
+    <table class="uk-table uk-table-hover">
+        <thead>
+        <tr>
+            <th class="uk-width-5-10">用户名</th>
+            <th class="uk-width-2-10">邮箱</th>
+            <th class="uk-width-1-10">注册时间</th>
+            <th class="uk-width-1-10">发帖数</th>
+            <th class="uk-width-1-10">评论数</th>
+            <th class="uk-width-1-10">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-repeat="userInfos:userInfo">
+            <td>
+                <a target="_blank" v-attr="href: '/user/'+userInfo.user.name" v-text="userInfo.user.name"></a>
+            </td>
+            <td>
+                <a v-attr="href: 'mailto:'+userInfo.user.email" v-text="userInfo.user.email"></a>
+            </td>
+            <td>
+                <span v-text="userInfo.user.created_at.toDateTime()"></span>
+            </td>
+            <td>
+                <span v-text="userInfo.blogs_num"></span>
+            </td>
+            <td>
+                <span v-text="userInfo.comments_num"></span>
+            </td>
+            <td>
+                <a href="#0" v-on="click: edit_user(userInfo.user)"><i class="uk-icon-edit"></i></a>
+                <a href="#0" v-on="click: delete_blog(blog)"><i class="uk-icon-trash-o"></i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

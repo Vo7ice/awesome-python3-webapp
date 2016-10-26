@@ -17,7 +17,7 @@ from handlers import COOKIE_NAME, cookie2user
 
 logging.basicConfig(level=logging.INFO)
 
-__author__ = 'Vo7ice'
+__author__ = 'Vo7ice'  
 
 '''
 async web application
