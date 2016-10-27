@@ -22,7 +22,7 @@ function initVM(blog) {
                         $form.showFormError(err);<!-- 如果出错 就显示错误-->
                     }
                     else {
-                        return location.assign('/api/blogs/' + r.id); <!-- 正常 就定向到生成的blog-->
+                        return location.assign('/blog/' + r.id); <!-- 正常 就定向到生成的blog-->
                     }
                 });
             }

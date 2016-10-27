@@ -44,3 +44,4 @@
      ```
     
 - [Javascript之confirm的用法] (http://www.cnblogs.com/netserver/p/4573512.html)
+- 网页的转义字符 [&nbsp|&quot|&amp|&lt|&gt等html字符转义] (http://blog.csdn.net/wusuopubupt/article/details/8817826)

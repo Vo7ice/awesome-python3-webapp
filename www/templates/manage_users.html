@@ -5,6 +5,31 @@
 {% block beforehead %}
 <script>
 
+function initVM(data){
+    var vm = new Vue({
+        el:'#vm',
+        data:{
+            page : data.page,
+            userInfos : data.userInfos
+        },
+        methods:{
+        }
+    });
+    $('#vm').show();
+}
+
+$(function(){
+    getJSON('/api/users',{
+        page : {{ page_index }}
+    },function(err,results){
+        if(err){
+            return fatal(err);
+        }
+        $('#loading').hide();
+        initVM(results);
+    });
+});
+
 </script>
 
 {% endblock %}
@@ -34,18 +59,19 @@
     <table class="uk-table uk-table-hover">
         <thead>
         <tr>
-            <th class="uk-width-5-10">用户名</th>
+            <th class="uk-width-3-10">用户名</th>
             <th class="uk-width-2-10">邮箱</th>
-            <th class="uk-width-1-10">注册时间</th>
+            <th class="uk-width-2-10">注册时间</th>
             <th class="uk-width-1-10">发帖数</th>
             <th class="uk-width-1-10">评论数</th>
             <th class="uk-width-1-10">操作</th>
         </tr>
         </thead>
         <tbody>
-        <tr v-repeat="userInfos:userInfo">
+        <tr v-repeat="userInfo:userInfos">
             <td>
                 <a target="_blank" v-attr="href: '/user/'+userInfo.user.name" v-text="userInfo.user.name"></a>
+                <span v-if="userInfo.user.admin" style="color:#d05"><i class="uk-icon-key"></i> 管理员</span>
             </td>
             <td>
                 <a v-attr="href: 'mailto:'+userInfo.user.email" v-text="userInfo.user.email"></a>
@@ -66,6 +92,8 @@
         </tr>
         </tbody>
     </table>
+
+    <div v-component="pagination" v-with="page"></div>
 </div>
 
 {% endblock %}

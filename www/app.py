@@ -17,7 +17,7 @@ from handlers import COOKIE_NAME, cookie2user
 
 logging.basicConfig(level=logging.INFO)
 
-__author__ = 'Vo7ice'  
+__author__ = 'Vo7ice'
 
 '''
 async web application
@@ -141,6 +141,7 @@ def response_factory(app, handler):
                 resp.content_type = 'application/json;charset=utf-8'
                 return resp
             else:
+                r['__user__'] = request.__user__  # 将user记录,直接匹配html中的__user__属性
                 resp = web.Response(
                     body=app['__templating__'].get_template(template).render(**r).encode('utf-8'))  # 需要templating关键字
                 resp.content_type = 'text/html;charset=utf-8'

@@ -11,11 +11,12 @@ import re
 
 from aiohttp import web
 
+import markdown2
 from config import configs
 from errors import APIValueError, APIError, APIPermissionError
-from models import User, Blog, next_id
+from models import User, Blog, next_id, Comment
 from coreweb import get, post
-from page import Page
+from apis import Page, UserInfo
 
 logging.basicConfig(level=logging.INFO)
 
@@ -29,7 +30,7 @@ _COOKIE_KEY = configs.session.secret
 
 @get('/')
 @asyncio.coroutine
-def index(request):  # 需要变长参数或关键字参数 找到原因了
+def index(*, page='1'):  # 需要变长参数或关键字参数 找到原因了
     # users = yield from User.findAll()
     # logging.info('users len %d' % len(users))
     # return {
@@ -44,8 +45,8 @@ def index(request):  # 需要变长参数或关键字参数 找到原因了
     ]
     return {
         '__template__': 'blogs.html',
-        'blogs': blogs,
-        '__user__': request.__user__
+        'page': get_page_index(page),
+        'blogs': blogs
     }
 
 
@@ -68,6 +69,12 @@ def get_page_index(page):
     if p < 1:
         p = 1
     return p
+
+
+def text2html(text):
+    lines = map(lambda s: '<p>%s</p>' % s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'),
+                filter(lambda s: s.strip() != '', text.split('\n')))
+    return ''.join(lines)
 
 
 # 新建blog
@@ -93,12 +100,19 @@ def api_create_blog(request, *, name, summary, content):
     return blog
 
 
-@get('/api/blogs/{id}')
+@get('/blog/{id}')
 @asyncio.coroutine
 def api_get_blog(*, id):
-    logging.info('args is okay!')
     blog = yield from Blog.find(id)
-    return blog
+    comments = yield from Comment.findAll(where='blog_id = ?', args=blog.id, orderBy='created_at desc')
+    for c in comments:
+        c.html_content = text2html(c.content)
+    blog.html_content = markdown2.markdown(blog.content)
+    return {
+        '__template__': 'blog.html',
+        'blog': blog,
+        'comments': comments
+    }
 
 
 @get('/api/blogs')
@@ -113,41 +127,55 @@ def api_blogs(*, page='1'):
     return dict(page=p, blogs=blogs)
 
 
+@get('/api/users')
+@asyncio.coroutine
+def api_users(*, page='1'):
+    page_index = get_page_index(page)
+    num = yield from User.findNumber('count(id)')
+    p = Page(num, page_index)
+    if num == 0:
+        return dict(page=p, userInfos=())
+    users = yield from User.findAll(orderBy='created_at desc', limit=(p.offset, p.limit))
+    userInfos = []
+    for u in users:
+        blogs = yield from Blog.findAll(where='user_id = ?', args=[u.id])
+        comments = yield from Comment.findAll(where='user_id = ?', args=[u.id])
+        userInfo = UserInfo(u, blogs, comments)
+        userInfos.append(userInfo)
+    return dict(page=p, userInfos=userInfos)
+
+
 # 新增blog
 @get('/manage/blogs/create')
-def manage_create_blog(request):
+def manage_create_blog():
     return {
         '__template__': 'manage_blog_edit.html',
         'id': '',
-        'action': '/api/blogs',
-        '__user__': request.__user__
+        'action': '/api/blogs'
     }
 
 
 @get('/manage/blogs')
-def manage_blogs(*, page='1', request):
+def manage_blogs(*, page='1'):
     return {
         '__template__': 'manage_blogs.html',
-        'page_index': get_page_index(page),
-        '__user__': request.__user__
+        'page_index': get_page_index(page)
     }
 
 
 @get('/manage/users')
-def manage_users(*, page='1', request):
+def manage_users(*, page='1'):
     return {
         '__template__': 'manage_users.html',
-        'page_index': get_page_index(page),
-        '__user__': request.__user__
+        'page_index': get_page_index(page)
     }
 
 
 @get('/manage/comments')
-def manage_comments(*, page='1', request):
+def manage_comments(*, page='1'):
     return {
         '__template__': 'manage_comments.html',
-        'page_index': get_page_index(page),
-        '__user__': request.__user__
+        'page_index': get_page_index(page)
     }
 
 
@@ -192,13 +220,13 @@ def cookie2user(cookie_str):
         return None
 
 
-@get('/api/users')
-@asyncio.coroutine
-def api_get_users():
-    users = yield from User.findAll()
-    for u in users:
-        u.passwd = '******'
-    return dict(users=users)
+# @get('/api/users')
+# @asyncio.coroutine
+# def api_get_users():
+#     users = yield from User.findAll()
+#     for u in users:
+#         u.passwd = '******'
+#     return dict(users=users)
 
 
 @get('/signin')

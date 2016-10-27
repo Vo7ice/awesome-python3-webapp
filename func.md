@@ -89,6 +89,29 @@
     max_age	可选 cookie需要延续的时间(以秒为单位)
     ```
     
+- `python` `map函数`
+    [Python中map()函数浅析] (https://my.oschina.net/zyzzy/blog/115096)
+    map(func, seq) 
+    1. 对可迭代函数'iterable'中的每一个元素应用‘function’方法，将结果作为list返回
+    2. 如果给出了额外的可迭代参数，则对每个可迭代参数中的元素‘并行’的应用‘function’
+    3. 如果'function'给出的是‘None’，自动假定一个‘identity’函数
+    
+    ``` python
+        list1 = [11,22,33]
+        map(None,list1)
+        [11, 22, 33]
+        list1 = [11,22,33]
+        list2 = [44,55,66]
+        list3 = [77,88,99]
+        map(None,list1,list2,list3)
+        [(11, 44, 77), (22, 55, 88), (33, 66, 99)]
+    ```
+
+- `python` `filter函数`
+    filter()也接收一个函数和一个序列.
+    和map()不同的时,filter()把传入的函数依次作用于每个元素
+    然后根据返回值是True还是False决定保留还是丢弃该元素
+   
 - `JavaScript` `preventDefault()`
     1. 定义和用法
     
@@ -112,3 +135,4 @@
         `window.confirm (message, ok, cancel)`
         
         [Javascript之confirm的用法] (http://www.cnblogs.com/netserver/p/4573512.html)
+
