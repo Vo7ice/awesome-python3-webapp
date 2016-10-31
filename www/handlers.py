@@ -13,7 +13,7 @@ from aiohttp import web
 
 import markdown2
 from config import configs
-from errors import APIValueError, APIError, APIPermissionError
+from errors import APIValueError, APIError, APIPermissionError, APIResourceNotFoundError
 from models import User, Blog, next_id, Comment
 from coreweb import get, post
 from apis import Page, UserInfo
@@ -125,6 +125,22 @@ def api_blogs(*, page='1'):
         return dict(page=p, blogs=())
     blogs = yield from Blog.findAll(orderBy='created_at desc', limit=(p.offset, p.limit))
     return dict(page=p, blogs=blogs)
+
+
+@post('/api/blogs/{id}/comment')
+@asyncio.coroutine
+def api_comment_create(id, request, *, content):
+    user = request.__user__
+    if user is None:
+        raise APIPermissionError('Please signin first.')
+    if not content or not content.strip():
+        raise APIValueError('content')
+    blog = yield from Blog.find(id)
+    if blog is None:
+        raise APIResourceNotFoundError('Blog')
+    comment = Comment(blog_id=id, user_id=user.id, user_name=user.name, user_image=user.image, content=content.strip())
+    yield from comment.save()
+    return comment
 
 
 @get('/api/users')
